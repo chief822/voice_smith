@@ -1,0 +1,40 @@
+{% extends "voice_effects/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+<h3> Demo audio file </h3>
+
+<audio controls>
+  <source src="{% static 'voice_effects/audio/demo.wav' %}" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+<h3> Or use your own audio file </h3>
+<p>Only <strong>.wav</strong> audio files are supported, with a maximum file size of <strong>10MB</strong>.</p>
+<form action="{% url 'effect' %}" method="POST" enctype="multipart/form-data" target="hidden_iframe" id="form">
+  {% csrf_token %}
+  {{ form }}
+</form>
+<p id="message"></p>
+<!--forgive me for using legacy method-->
+<iframe name="hidden_iframe" id="hidden_iframe"></iframe>
+<br>
+<hr>
+
+{% for effect in effects %}
+
+<ul>
+  <li><button data-effect="{{ effect }}"> {{ effect }} </button></li>
+</ul>
+
+{% empty %}
+
+<div> Failed to get effects </div>
+
+{% endfor %}
+
+<script src="{% static 'voice_effects/index.js' %}"></script>
+<link rel="stylesheet" href="{% static 'voice_effects/index.css' %}">
+
+{% endblock %}

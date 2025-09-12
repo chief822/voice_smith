@@ -121,3 +121,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# audio file size threshold
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
+
+# to store directly on disk
+FILE_UPLOAD_MAX_MEMORY_SIZE = 0
+
+# to fix same origin policy error as this header is set to deny by default
+X_FRAME_OPTIONS = 'SAMEORIGIN'
