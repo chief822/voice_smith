@@ -17,7 +17,6 @@ function upload_audio(event) {
 function handle_audio() {
     const doc = iframe.contentDocument || iframe.contentWindow.document;
     const text = doc.body.innerText.trim();
-    console.log("Raw response:", text);
 
     if (!text) {
         // Empty response (likely initial load)

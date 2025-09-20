@@ -51,10 +51,34 @@ def audio_effect(request):
         if os.path.exists(normalized_path):
             os.remove(normalized_path)
 
+        input_file = os.path.join(settings.MEDIA_ROOT, upload_path)
+
+        # ffprobe command to check for audio streams
+        probe_cmd = [
+            "ffprobe", "-v", "error",
+            "-select_streams", "a",
+            "-show_entries", "stream=index",
+            "-of", "csv=p=0", input_file
+        ]
+
+        try:
+            audio_streams = subprocess.check_output(probe_cmd).decode().strip().splitlines()
+        except subprocess.CalledProcessError:
+            return JsonResponse({
+                "status": "error",
+                "message": "Invalid media file."
+            }, status=400)
+
+        if not audio_streams:
+            return JsonResponse({
+                "status": "error",
+                "message": "File does not contain audio."
+            }, status=400)
+
         # Run ffmpeg for normalizing audio
         command = [
             "ffmpeg", "-y",
-            "-i", os.path.join(settings.MEDIA_ROOT, upload_path),
+            "-i", input_file,
             "-ar", "48000",   # 48kHz sample rate
             "-ac", "1",       # mono
             normalized_path
@@ -75,7 +99,7 @@ def audio_effect(request):
 
         return JsonResponse({
             "status": "success",
-            "message": "Audio uploaded and normalized to WAV successfully.",
+            "message": "Audio uploaded successfully.",
             "file": normalized_name
         })
 
