@@ -9,6 +9,14 @@
     <title>{% block title %} Voice Smith {% endblock %}</title>
 </head>
 <body>
+    <header>
+        <h1 class="inline-heading"><a href="{% url 'index' %}">Voice Smith</a></h1>
+        <nav>
+            <a href="{% url 'index' %}">Home</a> |
+            <a href="{% url 'about' %}">About</a>
+        </nav>
+    </header>
+    <hr>
     {% block body %}
     {% endblock %}
 </body>

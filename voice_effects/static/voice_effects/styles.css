@@ -1,3 +1,11 @@
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.inline-heading, nav {
+  display: inline; /* or inline-block if you want box-like behavior */
+}
+
 .modal-overlay {
     position: fixed;
     top: 0;

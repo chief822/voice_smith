@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Open modal
     document.querySelectorAll("button[data-url]").forEach(button => {
         button.addEventListener('click', () => {
+            document.getElementById("demo_audio").pause(); // Pause demo audio if playing
             document.getElementById("modal-title").textContent = "Processing..."
             modal.classList.add('active');
         });

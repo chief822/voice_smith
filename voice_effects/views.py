@@ -160,3 +160,6 @@ def audio_effect(request):
             {"status": "error", "message": "Method not allowed. Use GET to process or POST to upload."},
             status=405
         )
+
+def about(request):
+    return render(request, 'voice_effects/about.html')
