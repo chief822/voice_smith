@@ -4,6 +4,7 @@ from django.http import FileResponse, JsonResponse
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from .models import Effects
 
 import os
 import tempfile
@@ -11,10 +12,10 @@ import subprocess
 
 
 def index(request):
-    voice_effects = ["effect1", "effect2"]
+    effects = Effects.objects.all()
     form = AudioInput(auto_id=True)
     return render(request, 'voice_effects/index.html', {
-        "effects": voice_effects,
+        "effects": effects,
         "form": form
     })
 
@@ -108,7 +109,7 @@ def audio_effect(request):
         session_key = request.session.session_key
         if not session_key:
             return JsonResponse(
-                {"error": "No active session. Please upload an audio file first."},
+                {"status": "error", "message": "No active session. Please upload an audio file first."},
                 status=400
             )
 
@@ -126,21 +127,20 @@ def audio_effect(request):
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_out:
             output_file = tmp_out.name
 
-        # Example ffmpeg command: convert to mono, 16kHz WAV
-        command = [
-            "ffmpeg", "-y",
-            "-i", input_file,
-            "-ac", "1",        # mono
-            "-ar", "16000",    # 16kHz
-            output_file
-        ]
+        effect = request.GET.get("effect_name", "none").strip().lower()
+        effects = Effects.objects.filter(name__iexact=effect)
+        if not effects.exists():
+            return JsonResponse({"status": "error", "message": "Effect not found."}, status=404)
+        effect = effects.first()
+
+        command = effect.command(input=input_file, output=output_file)
 
         try:
             subprocess.run(command, check=True, capture_output=True, text=True)
         except subprocess.CalledProcessError as e:
             os.remove(output_file)
             return JsonResponse(
-                {"error": f"Audio processing failed: {e.stderr or e.stdout}"},
+                {"status": "error", "message": f"Audio processing failed: {e.stderr or e.stdout}"},
                 status=500
             )
 
@@ -164,6 +164,6 @@ def audio_effect(request):
 
     else:
         return JsonResponse(
-            {"error": "Method not allowed. Use GET to process or POST to upload."},
+            {"status": "error", "message": "Method not allowed. Use GET to process or POST to upload."},
             status=405
         )

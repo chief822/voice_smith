@@ -4,6 +4,13 @@ document.addEventListener("DOMContentLoaded", function() {
     iframe = document.getElementById("hidden_iframe");
     document.querySelector("#audio").addEventListener('change', upload_audio);
     iframe.onload = handle_audio;
+
+    document.querySelectorAll("button[data-url]").forEach(button => {
+        button.addEventListener("click", function() {
+            const effect = this.getAttribute("data-url");
+            apply_effect(effect);
+        });
+    });
 });
 
 function upload_audio(event) {
@@ -31,5 +38,15 @@ function handle_audio() {
 }
 
 function apply_effect(effect) {
-    gh
+    fetch(effect)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "error") {
+                document.getElementById("message").textContent = `Error: ${data.message}`;
+                return;
+            }
+        })
+        .catch(error => {
+            console.error("Error applying effect:", error);
+        });
 }

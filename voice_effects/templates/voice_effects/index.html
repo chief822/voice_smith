@@ -25,7 +25,7 @@
 {% for effect in effects %}
 
 <ul>
-  <li><button data-effect="{{ effect }}"> {{ effect }} </button></li>
+  <li><button data-url="{% url 'effect' %}?effect_name={{ effect.name }}"> {{ effect.name }} </button> — {{ effect.description }}</li>
 </ul>
 
 {% empty %}
@@ -34,7 +34,16 @@
 
 {% endfor %}
 
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <button class="modal-close" id="closeModal">&times;</button>
+    <h2>Modal Title</h2>
+    <p>This is a temporary UI overlay. Click outside or the cross to close.</p>
+  </div>
+</div>
+
 <script src="{% static 'voice_effects/index.js' %}"></script>
+<script src="{% static 'voice_effects/ui.js' %}"></script>
 <link rel="stylesheet" href="{% static 'voice_effects/index.css' %}">
 
 {% endblock %}
