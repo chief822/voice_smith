@@ -6,19 +6,25 @@ document.addEventListener("DOMContentLoaded", function () {
     // Open modal
     document.querySelectorAll("button[data-url]").forEach(button => {
         button.addEventListener('click', () => {
+            document.getElementById("modal-title").textContent = "Processing..."
             modal.classList.add('active');
         });
     });
 
+    function closeModal() {
+        modal.classList.remove('active');
+        const player = document.querySelector("#modal-player");
+        player.pause();
+    }
     // Close modal
     closeBtn.addEventListener('click', () => {
-        modal.classList.remove('active');
+        closeModal();
     });
 
     // Close when clicking outside the box
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            modal.classList.remove('active');
+            closeModal();
         }
     });
 });

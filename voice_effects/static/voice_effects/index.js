@@ -1,4 +1,5 @@
 let iframe;
+let currentObjectUrl = null; // keep track of the last blob URL
 
 document.addEventListener("DOMContentLoaded", function() {
     iframe = document.getElementById("hidden_iframe");
@@ -37,16 +38,41 @@ function handle_audio() {
     }
 }
 
-function apply_effect(effect) {
-    fetch(effect)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "error") {
-                document.getElementById("message").textContent = `Error: ${data.message}`;
+function apply_effect(effectUrl) {
+    fetch(effectUrl)
+        .then(async (response) => {
+            document.getElementById("modal-title").textContent = new URL(effectUrl, window.location.origin).searchParams.get("effect_name");
+            const contentType = response.headers.get("Content-Type");
+
+            if (contentType && contentType.includes("application/json")) {
+                // Error response
+                const data = await response.json();
+                document.getElementById("modal-description").textContent =
+                    `Error: ${data.error || data.message}`.substring(0, 200) + "..."; // truncate if too long
                 return;
             }
+
+            if (contentType && contentType.includes("audio/")) {
+                // Audio response
+                const blob = await response.blob();
+
+                // Clean up old object URL if one exists
+                if (currentObjectUrl) {
+                    URL.revokeObjectURL(currentObjectUrl);
+                }
+
+                const url = URL.createObjectURL(blob);
+                currentObjectUrl = url; // save reference for next time
+
+                const player = document.querySelector("#modal-player");
+                player.src = url;
+                player.play();
+                return;
+            }
+
+            console.error("Unexpected response type:", contentType);
         })
-        .catch(error => {
+        .catch((error) => {
             console.error("Error applying effect:", error);
         });
 }

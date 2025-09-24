@@ -20,11 +20,11 @@ class Effects(models.Model):
         full_text = " ".join(self.template)
 
         # Check for placeholders
-        if "{input}.wav" not in full_text:
-            raise ValidationError({"template": "Template must include '{input}.wav'."})
+        if "{input}" not in full_text:
+            raise ValidationError({"template": "Template must include '{input}'."})
 
-        if "{output}.wav" not in full_text:
-            raise ValidationError({"template": "Template must include '{output}.wav'."})
+        if "{output}" not in full_text:
+            raise ValidationError({"template": "Template must include '{output}'."})
 
     def command(self, *, input, output):
         # Replace placeholders safely in each argument
