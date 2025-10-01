@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.classList.remove('active');
         const player = document.querySelector("#modal-player");
         player.pause();
+        player.src = null;
     }
     // Close modal
     closeBtn.addEventListener('click', () => {

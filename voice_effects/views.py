@@ -14,7 +14,7 @@ def is_file_in_session(request):
     session_key = request.session.session_key
     if not session_key:
         return False
-    filename = fr"tmp\{session_key}.wav"
+    filename = fr"tmp/{session_key}.wav"
     file_path = os.path.join(settings.MEDIA_ROOT, filename)
     if os.path.exists(file_path):
         return file_path
@@ -122,7 +122,7 @@ def audio_effect(request):
             # Fallback: use demo.wav from static
             input_file = os.path.join(
                 settings.BASE_DIR,
-                r"voice_effects\static\voice_effects\audio\demo.wav"
+                r"voice_effects/static/voice_effects/audio/demo.wav"
             )
         print("here", input_file)
         # Create a temporary output file

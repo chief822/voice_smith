@@ -18,7 +18,7 @@ function upload_audio(event) {
     const files = event.target.files; // FileList object
 
     if (files.length > 0) {
-        document.getElementById("message").textContent = `Uploading`;
+        document.getElementById("message").textContent = `Uploading. Please wait`;
         document.querySelector("#form").submit();
     }
 }
