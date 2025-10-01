@@ -18,6 +18,7 @@ function upload_audio(event) {
     const files = event.target.files; // FileList object
 
     if (files.length > 0) {
+        document.getElementById("message").textContent = `Uploading`;
         document.querySelector("#form").submit();
     }
 }
@@ -32,7 +33,7 @@ function handle_audio() {
     }
     try {
         let data = JSON.parse(text);
-        document.getElementById("message").textContent = `${data["status"]}, ${data["message"]} You can choose another file`;
+        document.getElementById("message").textContent = `${data["status"].charAt(0).toUpperCase()+data["status"].slice(1)}. ${data["message"]} You can choose another file`;
     } catch (e) {
         console.error("Could not parse JSON:", e);
     }

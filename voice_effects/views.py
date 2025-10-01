@@ -10,13 +10,24 @@ import os
 import tempfile
 import subprocess
 
+def is_file_in_session(request):
+    session_key = request.session.session_key
+    if not session_key:
+        return False
+    filename = fr"tmp\{session_key}.wav"
+    file_path = os.path.join(settings.MEDIA_ROOT, filename)
+    if os.path.exists(file_path):
+        return file_path
+    return False
 
 def index(request):
     effects = Effects.objects.all()
     form = AudioInput(auto_id=True)
+    uploaded = is_file_in_session(request)
     return render(request, 'voice_effects/index.html', {
         "effects": effects,
-        "form": form
+        "form": form,
+        "uploaded": uploaded
     })
 
 
@@ -105,22 +116,15 @@ def audio_effect(request):
         })
 
     elif request.method == "GET":
-        # Ensure session exists
-        session_key = request.session.session_key
-        if not session_key:
-            return JsonResponse(
-                {"status": "error", "message": "No active session. Please upload an audio file first."},
-                status=400
-            )
-        filename = fr"tmp\{session_key}.wav"
-        input_file = os.path.join(settings.MEDIA_ROOT, filename)
-
-        if not os.path.exists(input_file):
+        # Check if there's an uploaded file in session
+        input_file = is_file_in_session(request)
+        if not input_file:
             # Fallback: use demo.wav from static
             input_file = os.path.join(
                 settings.BASE_DIR,
                 r"voice_effects\static\voice_effects\audio\demo.wav"
             )
+        print("here", input_file)
         # Create a temporary output file
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_out:
             output_file = tmp_out.name
@@ -160,3 +164,6 @@ def audio_effect(request):
             {"status": "error", "message": "Method not allowed. Use GET to process or POST to upload."},
             status=405
         )
+
+def about(request):
+    return render(request, 'voice_effects/about.html')

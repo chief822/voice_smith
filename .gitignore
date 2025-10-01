@@ -1,3 +1,10 @@
+# Google drive files
+.tmp.drivedownload/
+.tmp.driveupload/
+
+# uploaded file
+tmp/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
