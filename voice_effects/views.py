@@ -40,7 +40,7 @@ def audio_effect(request):
             return JsonResponse(
                 {
                     "status": "error",
-                    "message": "There was a problem with your upload.",
+                    "message": "There was a problem with your upload. Make sure audio size is less than 10MB",
                     "errors": errors,
                 },
                 status=400
@@ -49,7 +49,10 @@ def audio_effect(request):
         audio = audio_form.cleaned_data["audio"]
 
         # Ensure session exists
+        if not request.session.session_key:
+            request.session.save()
         session_key = request.session.session_key
+
 
         # Paths
         upload_name = f"tmp/{session_key}_upload"
@@ -124,7 +127,6 @@ def audio_effect(request):
                 settings.BASE_DIR,
                 r"voice_effects/static/voice_effects/audio/demo.wav"
             )
-        print("here", input_file)
         # Create a temporary output file
         with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_out:
             output_file = tmp_out.name
@@ -137,7 +139,7 @@ def audio_effect(request):
         command = effect.command(input=input_file, output=output_file)
 
         try:
-            subprocess.run(command, check=True)
+            subprocess.run(command, check=True, capture_output=True)
         except subprocess.CalledProcessError as e:
             os.remove(output_file)
             return JsonResponse(

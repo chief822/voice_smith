@@ -42,7 +42,6 @@ function handle_audio() {
 function apply_effect(effectUrl) {
     fetch(effectUrl)
         .then(async (response) => {
-            document.getElementById("modal-title").textContent = new URL(effectUrl, window.location.origin).searchParams.get("effect_name");
             const contentType = response.headers.get("Content-Type");
 
             if (contentType && contentType.includes("application/json")) {
@@ -67,7 +66,8 @@ function apply_effect(effectUrl) {
 
                 const player = document.querySelector("#modal-player");
                 player.src = url;
-                player.play();
+                player.play()
+                document.getElementById("modal-title").textContent = new URL(effectUrl, window.location.origin).searchParams.get("effect_name");
                 return;
             }
 
